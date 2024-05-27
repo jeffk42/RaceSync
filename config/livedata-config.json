@@ -1,0 +1,5 @@
+{
+    "protocol" : "https",
+    "url" : "api.openf1.org",
+    "version" : "v1"
+}
