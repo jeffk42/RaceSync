@@ -1,10 +1,35 @@
 {
+  "main": "src/racesync.ts",
+  "scripts": {
+    "dev": "nodemon src/racesync.ts",
+    "build": "rm -rf build/ && prettier --write src/ && tsc"
+  },
   "devDependencies": {
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^20.12.12",
+    "axios": "^1.7.2",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.1",
     "rxjs": "^7.8.1"
-  }
+  },
+  "name": "racesync",
+  "description": "A small project to manipulate smart home devices based on live Formula 1 race data",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeffk42/RaceSync.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeffk42/RaceSync/issues"
+  },
+  "homepage": "https://github.com/jeffk42/RaceSync#readme"
 }
