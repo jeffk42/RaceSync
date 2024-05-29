@@ -9,10 +9,10 @@ const server = express();
 server.use(bodyParser.json());
 
 server.get("/api/start", (req: any, res: any) => {
-  const balls = req.query.balls;
   res.writeHead(200, { "Content-Type": "text/plain" });
-  res.write("Race Sync Server has been started. " + balls);
+  res.write("Race Sync Server has been started.");
   res.end();
+  console.log(req.query);
 });
 
 server.listen(properties.server.port, () => {
