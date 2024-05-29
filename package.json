@@ -1,5 +1,5 @@
 {
-  "main": "src/racesync.ts",
+  "main": "build/racesync.js",
   "scripts": {
     "dev": "nodemon src/racesync.ts",
     "build": "rm -rf build/ && prettier --write src/ && tsc"

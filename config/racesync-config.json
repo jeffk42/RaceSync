@@ -1,6 +1,6 @@
 {
-    "server-properties" : {
-        "hostname" : "galileo.local",
+    "server" : {
+        "hostname" : "localhost",
         "port" : 8000
     }
 }
