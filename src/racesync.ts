@@ -1,40 +1,99 @@
-// import { createServer } from "http";
+import { FlagChangeService } from "./services/flag-change.service";
 const express = require("express");
 const bodyParser = require("body-parser");
 const http = require("http");
+const https = require("https");
 const url = require("url");
 const properties = require("../config/racesync-config.json");
 const server = express();
 
-server.use(bodyParser.json());
+const options = {
+  host: "api.openf1.org",
+  port: 443,
+  path: "/v1/race_control?session_key=latest&category=Flag",
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 
-server.get("/api/start", (req: any, res: any) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.write("Race Sync Server has been started.");
-  res.end();
-  console.log(req.query);
-});
+// const fcService = new FlagChangeService();
+// server.use(bodyParser.json());
+let rcMsgArray: any[] = [];
 
-server.listen(properties.server.port, () => {
-  console.log(
-    "Server is running on " +
-      properties.server.hostname +
-      " port " +
-      properties.server.port,
-  );
-});
-// create the http server
-// const server = http.createServer((req: any, res: any) => {
-//   console.log(req);
-//   if (req.method == "GET" && req.url == "/api/start") {
-//     res.writeHead(200, { "Content-Type": "text/plain" });
-//     res.write("Race Sync Server has been started.");
-//     res.end();
+function getJSON(options: any, onResult: any): void {
 
+  const port = options.port == 443 ? https : http;
+
+  let output = "";
+
+  const req = port.request(options, (res: any) => {
+    console.log(`${options.host} : ${res.statusCode}`);
+    res.setEncoding("utf8");
+
+    res.on("data", (chunk: any) => {
+      output += chunk;
+    });
+
+    res.on("end", () => {
+      let obj = JSON.parse(output);
+
+      onResult(res.statusCode, obj);
+    });
+  });
+
+  req.on("error", (err: any) => {
+    // res.send('error: ' + err.message);
+  });
+
+  req.end();
+}
+
+function getLatestMessages(oldIndex: number, newIndex: number): any[] {
+  console.log("oldIndex " + oldIndex);
+  console.log("newIndex" + newIndex);
+  if (oldIndex < 0) {
+    console.log("oldIndex < 0");
+    return rcMsgArray;
+  } else if (newIndex > oldIndex) {
+    return rcMsgArray.slice(oldIndex, newIndex + 1);
+  }
+  return [];
+}
+
+let intervalId = setInterval(() => {
+  getJSON(options, (statusCode: any, result: any[]) => {
+    const oldIndex = rcMsgArray.length - 1;
+    rcMsgArray = result;
+    const newIndex = rcMsgArray.length - 1;
+    let updates = getLatestMessages(oldIndex, newIndex);
+    if (updates.length < 1) {
+      console.log("No updates found this time.");
+    } else {
+      console.log(rcMsgArray);
+    }
+  });
+}, 5000);
+
+// result.forEach((element) => {
+//   console.log(element.message);
+// });
+// });
+
+// server.get("/api/start", (req: any, res: any) => {
+//   res.writeHead(200, { "Content-Type": "text/plain" });
+//   res.write("Race Sync Server has been started.");
+//   res.end();
+//   console.log(req.query);
+//   while (true) {
+//     getJSON(options, (statusCode: any, result: any) => {
+//       console.log(statusCode);
+//       console.log(result);
+//     });
+//     setTimeout(() => {}, 3000);
 //   }
 // });
 
-// set up the server port and listen for connections
 // server.listen(properties.server.port, () => {
 //   console.log(
 //     "Server is running on " +
