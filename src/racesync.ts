@@ -1,4 +1,5 @@
 import { FlagChangeService } from "./services/flag-change.service";
+import { FlagState } from "./types/flag-state";
 const express = require("express");
 const bodyParser = require("body-parser");
 const http = require("http");
@@ -6,6 +7,7 @@ const https = require("https");
 const url = require("url");
 const properties = require("../config/racesync-config.json");
 const server = express();
+let currentFlagStatus: FlagState = FlagState.CLEAR;
 
 const options = {
   host: "api.openf1.org",
@@ -22,7 +24,6 @@ const options = {
 let rcMsgArray: any[] = [];
 
 function getJSON(options: any, onResult: any): void {
-
   const port = options.port == 443 ? https : http;
 
   let output = "";
@@ -59,6 +60,10 @@ function getLatestMessages(oldIndex: number, newIndex: number): any[] {
     return rcMsgArray.slice(oldIndex, newIndex + 1);
   }
   return [];
+}
+
+function updateFlagStatus(msgArray: any[]) {
+
 }
 
 let intervalId = setInterval(() => {
