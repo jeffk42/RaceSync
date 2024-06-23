@@ -1,6 +1,6 @@
 export enum FlagState {
-    CLEAR,
-    GREEN,
-    YELLOW,
-    RED
+  CLEAR,
+  GREEN,
+  YELLOW,
+  RED,
 }

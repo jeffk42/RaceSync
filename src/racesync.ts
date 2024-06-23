@@ -8,6 +8,7 @@ const url = require("url");
 const properties = require("../config/racesync-config.json");
 const server = express();
 let currentFlagStatus: FlagState = FlagState.CLEAR;
+const flagChangeService: FlagChangeService = new FlagChangeService();
 
 const options = {
   host: "api.openf1.org",
@@ -37,9 +38,13 @@ function getJSON(options: any, onResult: any): void {
     });
 
     res.on("end", () => {
-      let obj = JSON.parse(output);
+      if (res.statusCode === 200) {
+        let obj = JSON.parse(output);
 
-      onResult(res.statusCode, obj);
+        onResult(res.statusCode, obj);
+      } else {
+        console.log("Skipping update due to server error.");
+      }
     });
   });
 
@@ -51,8 +56,8 @@ function getJSON(options: any, onResult: any): void {
 }
 
 function getLatestMessages(oldIndex: number, newIndex: number): any[] {
-  console.log("oldIndex " + oldIndex);
-  console.log("newIndex" + newIndex);
+  //console.log("oldIndex " + oldIndex);
+  console.log("newIndex " + newIndex);
   if (oldIndex < 0) {
     console.log("oldIndex < 0");
     return rcMsgArray;
@@ -62,23 +67,23 @@ function getLatestMessages(oldIndex: number, newIndex: number): any[] {
   return [];
 }
 
-function updateFlagStatus(msgArray: any[]) {
+function updateFlagStatus(msgArray: any[]) {}
 
-}
-
+let reqNum = 1;
 let intervalId = setInterval(() => {
   getJSON(options, (statusCode: any, result: any[]) => {
     const oldIndex = rcMsgArray.length - 1;
     rcMsgArray = result;
     const newIndex = rcMsgArray.length - 1;
     let updates = getLatestMessages(oldIndex, newIndex);
+    reqNum++;
     if (updates.length < 1) {
-      console.log("No updates found this time.");
+      console.log("No updates found this time. req#" + reqNum);
     } else {
       console.log(rcMsgArray);
     }
   });
-}, 5000);
+}, 10000);
 
 // result.forEach((element) => {
 //   console.log(element.message);
